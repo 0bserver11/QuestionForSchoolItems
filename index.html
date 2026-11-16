@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111318">
+  <title>Подготовка к контрольным</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="#" id="homeLink"><span class="brand-mark">Q</span><span>Школьная подготовка</span></a>
+      <span class="top-note">Личное пространство</span>
+    </header>
+
+    <section id="homeScreen" class="screen">
+      <div class="intro">
+        <p class="eyebrow">УЧИСЬ В СВОЁМ ТЕМПЕ</p>
+        <h1>Подготовка к<br><span>контрольным.</span></h1>
+        <p class="intro-copy">Выбирай предмет, повторяй материал и проверяй, насколько хорошо ты его знаешь.</p>
+      </div>
+      <div class="section-heading"><div><p class="eyebrow">ТВОИ ПРЕДМЕТЫ</p><h2>С чего начнём?</h2></div></div>
+      <div id="subjectGrid" class="subject-grid"></div>
+    </section>
+
+    <section id="topicsScreen" class="screen hidden">
+      <button class="back-button" id="backToSubjects">← Все предметы</button>
+      <div class="page-heading">
+        <p class="eyebrow">ПРЕДМЕТ</p>
+        <h1 id="subjectTitle">История</h1>
+        <p id="subjectDescription" class="intro-copy"></p>
+      </div>
+      <p class="eyebrow topic-label">ВЫБЕРИ РАЗДЕЛ</p>
+      <div id="topicGrid" class="topic-grid"></div>
+    </section>
+
+    <section id="studyScreen" class="screen hidden">
+      <button class="back-button" id="backToTopics">← К разделам</button>
+      <div class="study-heading">
+        <div><p class="eyebrow" id="studySubject">ИСТОРИЯ</p><h1 id="studyTitle">Карточки</h1></div>
+        <span class="counter" id="cardCounter">1 / 10</span>
+      </div>
+      <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+      <button class="flashcard" id="flashcard" aria-label="Перевернуть карточку">
+        <span class="card-topline"><span id="cardSide">ВОПРОС</span><span>НАЖМИ, ЧТОБЫ ПЕРЕВЕРНУТЬ</span></span>
+        <span id="cardText" class="card-text"></span>
+        <span class="card-bottomline"><span id="cardHint">Подумай и проверь себя</span><span class="flip-icon">↻</span></span>
+      </button>
+      <div class="study-controls">
+        <button class="control-button secondary" id="prevCard">← Назад</button>
+        <button class="control-button primary" id="nextCard">Следующий →</button>
+      </div>
+      <button class="shuffle-button" id="shuffleCards">Перемешать карточки</button>
+    </section>
+
+    <footer><span>Школьная подготовка</span><span>Сделано для личного использования</span></footer>
+  </main>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
