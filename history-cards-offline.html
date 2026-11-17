@@ -29,13 +29,45 @@ summary::-webkit-details-marker{display:none}
 details[open] summary{background:#202f49}
 .top{display:inline-block;margin-top:25px;color:#b9c9df;text-decoration:none;font-size:14px}
 footer{margin-top:38px;text-align:center;color:#8493a9;font-size:12px}
-</style>
+
+.quiz-box{margin:22px 0 30px;padding:20px;border:1px solid #405575;border-radius:18px;background:#1b2940}
+.quiz-box h2{margin:0 0 8px;font-size:21px}
+.quiz-description{margin:0 0 16px;color:#b8c6da;line-height:1.5}
+.quiz-start,.quiz-action{border:0;border-radius:11px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.quiz-start,.quiz-primary{background:#8db8ff;color:#102039}
+.quiz-card{display:none;margin-top:16px}
+.quiz-progress{color:#a9bdd8;font-size:13px;margin-bottom:10px}
+.quiz-question{font-size:19px;line-height:1.5;font-weight:700;margin:0 0 16px}
+.quiz-answer{display:none;padding:14px;border-radius:12px;background:#243653;line-height:1.6;margin:0 0 14px;white-space:pre-wrap}
+.quiz-actions{display:flex;flex-wrap:wrap;gap:9px}
+.quiz-secondary{background:#344965;color:#f4f6fb}
+.quiz-known{background:#1f7657;color:white}
+.quiz-missed{background:#9a3d49;color:white}
+.quiz-result{display:none;margin-top:14px;color:#d6e3f5;line-height:1.6}
+\n</style>
 </head>
 <body>
 <main id="top">
   <h1>История 1919–1939</h1>
   <p class="intro">Полная колода из 82 карточек. Нажимай на вопрос, чтобы раскрыть ответ. Страница работает без JavaScript и без интернета после загрузки.</p>
-  <nav aria-label="Разделы">
+
+  <section class="quiz-box" id="quiz">
+    <h2>🎲 Викторина по истории</h2>
+    <p class="quiz-description">Случайные вопросы из всех 82 карточек. Сначала попробуй ответить сам, затем открой ответ и отметь, знал ли его.</p>
+    <button class="quiz-start" id="quizStart">Начать викторину</button>
+    <div class="quiz-card" id="quizCard">
+      <div class="quiz-progress" id="quizProgress"></div>
+      <p class="quiz-question" id="quizQuestion"></p>
+      <div class="quiz-answer" id="quizAnswer"></div>
+      <div class="quiz-actions">
+        <button class="quiz-action quiz-secondary" id="quizReveal">Показать ответ</button>
+        <button class="quiz-action quiz-known" id="quizKnown" hidden>Знал</button>
+        <button class="quiz-action quiz-missed" id="quizMissed" hidden>Не знал</button>
+      </div>
+    </div>
+    <div class="quiz-result" id="quizResult"></div>
+  </section>
+\n  <nav aria-label="Разделы">
     <a href="#countries">🌍 История стран</a>
     <a href="#people">👤 Деятели</a>
     <a href="#terms">📖 Термины</a>
@@ -954,5 +986,93 @@ footer{margin-top:38px;text-align:center;color:#8493a9;font-size:12px}
   <a class="top" href="#top">↑ Наверх</a>
   <footer>Личная подготовка к контрольной</footer>
 </main>
-</body>
+
+<script>
+(() => {
+  const sourceCards = Array.from(document.querySelectorAll(".card")).map(card => ({
+    question: card.querySelector(".question").textContent.trim(),
+    answer: card.querySelector(".answer p").textContent.trim()
+  }));
+
+  const startButton = document.getElementById("quizStart");
+  const quizCard = document.getElementById("quizCard");
+  const questionElement = document.getElementById("quizQuestion");
+  const answerElement = document.getElementById("quizAnswer");
+  const progressElement = document.getElementById("quizProgress");
+  const revealButton = document.getElementById("quizReveal");
+  const knownButton = document.getElementById("quizKnown");
+  const missedButton = document.getElementById("quizMissed");
+  const resultElement = document.getElementById("quizResult");
+
+  let questions = [];
+  let currentIndex = 0;
+  let knownCount = 0;
+  let missedCount = 0;
+
+  function shuffle(items) {
+    const shuffled = [...items];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  function showQuestion() {
+    const item = questions[currentIndex];
+    questionElement.textContent = item.question;
+    answerElement.textContent = item.answer;
+    answerElement.style.display = "none";
+    progressElement.textContent = "Вопрос " + (currentIndex + 1) + " из " + questions.length;
+    revealButton.hidden = false;
+    knownButton.hidden = true;
+    missedButton.hidden = true;
+  }
+
+  function finishQuiz() {
+    quizCard.style.display = "none";
+    resultElement.style.display = "block";
+    resultElement.innerHTML = "<strong>Викторина завершена!</strong><br>Знал: " + knownCount +
+      "<br>Нужно повторить: " + missedCount + "<br><br>";
+    const restart = document.createElement("button");
+    restart.className = "quiz-action quiz-primary";
+    restart.textContent = "Пройти ещё раз";
+    restart.addEventListener("click", startQuiz);
+    resultElement.appendChild(restart);
+    startButton.hidden = false;
+    startButton.textContent = "Перезапустить викторину";
+  }
+
+  function startQuiz() {
+    questions = shuffle(sourceCards);
+    currentIndex = 0;
+    knownCount = 0;
+    missedCount = 0;
+    resultElement.style.display = "none";
+    resultElement.textContent = "";
+    quizCard.style.display = "block";
+    startButton.hidden = true;
+    showQuestion();
+  }
+
+  function markAnswer(known) {
+    if (known) knownCount++;
+    else missedCount++;
+    currentIndex++;
+    if (currentIndex >= questions.length) finishQuiz();
+    else showQuestion();
+  }
+
+  startButton.addEventListener("click", startQuiz);
+  revealButton.addEventListener("click", () => {
+    answerElement.style.display = "block";
+    revealButton.hidden = true;
+    knownButton.hidden = false;
+    missedButton.hidden = false;
+  });
+  knownButton.addEventListener("click", () => markAnswer(true));
+  missedButton.addEventListener("click", () => markAnswer(false));
+})();
+</script>
+\n</body>
 </html>
